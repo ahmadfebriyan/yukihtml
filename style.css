@@ -182,7 +182,7 @@ dialog{padding:0; border:none; background:transparent; width:min(880px,96vw)}
   background:#0e0f17; color:var(--fg);
   border:1px solid #242842; border-radius:16px;
   box-shadow:0 30px 120px rgba(0,0,0,.45); overflow:hidden;
-  max-height:min(85vh, 720px); /* FIX: tinggi maksimal fix agar tidak berubah-ubah di Android */
+  height:min(85vh, 720px); /* FIX: tinggi fix agar tidak berubah-ubah di Android */
 }
 /* Header */
 .oa-header{
@@ -200,9 +200,9 @@ dialog{padding:0; border:none; background:transparent; width:min(880px,96vw)}
   color:#e9ecff; border:1px solid #2a2e58; background:rgba(255,255,255,.06); cursor:pointer
 }
 /* Shell + Sidebar */
-.oa-shell{display:grid; grid-template-columns:200px 1fr; gap:0; min-height:480px; max-height:calc(85vh - 120px); overflow:hidden;}
+.oa-shell{display:grid; grid-template-columns:200px 1fr; gap:0; flex:1; overflow:hidden;}
 @media (max-width:720px){ 
-  .oa-shell{grid-template-columns:1fr; max-height:none;} 
+  .oa-shell{grid-template-columns:1fr;} 
 }
 
 .oa-tabs{
@@ -211,19 +211,20 @@ dialog{padding:0; border:none; background:transparent; width:min(880px,96vw)}
   background:linear-gradient(180deg,#0f1122,#0d0f19);
 }
 @media (max-width:720px){
-  .oa-tabs{flex-direction:row; border-right:none; border-bottom:1px solid #1a1d37; overflow-x:auto;}
+  .oa-tabs{flex-direction:row; border-right:none; border-bottom:1px solid #1a1d37; overflow-x:auto; flex-shrink:0;}
 }
 .oa-tab{
   text-align:left; padding:10px 12px; border-radius:10px;
   border:1px solid transparent; background:transparent; color:#cbd2ff;
   font-weight:600; cursor:pointer;
-  transition:background .15s ease,border .15s ease,color .15s ease
+  transition:background .15s ease,border .15s ease,color .15s ease;
+  white-space:nowrap; /* FIX: tab text tidak wrap di mobile */
 }
 .oa-tab:hover{ background:#14173a; border-color:#222859; color:#e7eaff }
 .oa-tab.active{ background:linear-gradient(180deg,#171b3d,#14183a); border-color:#2b3268; color:#fff }
 
 /* Body & Pages */
-.oa-body{ padding:12px 18px; overflow:auto; flex:1; }
+.oa-body{ padding:12px 18px; overflow:auto; flex:1; min-height:0; }
 .oa-page.hidden{ display:none !important }
 .oa-section{ padding:14px 0 18px; border-bottom:1px solid #1a1d37 }
 .oa-section:last-child{ border-bottom:none; padding-bottom:8px }
