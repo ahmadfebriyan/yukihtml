@@ -120,28 +120,38 @@ body{
   pointer-events:none;
   overflow:hidden;
   z-index:2; /* layer di atas hero, di bawah UI */
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
 }
 
 .bubble{
-  position:absolute;
-  left:50%;
-  transform:translate(-50%, 20px);
-  bottom:30px;
-
-  padding:10px 16px;
+  position:relative;
+  left:auto;
+  transform:none;
+  bottom:auto;
+  margin:8px 12px;
+  max-width:min(90vw, 420px); /* FIX: batas lebar agar tidak terlalu lebar di Android */
+  width:fit-content; /* FIX: ukuran menyesuaikan konten tapi tetap dalam max-width */
+  padding:12px 16px;
   border-radius:14px;
   font-size:14px;
+  line-height:1.45; /* FIX: line-height konsisten */
+  text-align:center; /* FIX: teks rata tengah */
+  word-wrap:break-word; /* FIX: teks panjang turun ke bawah */
 
-  background:rgba(20,20,30,.75);
+  background:rgba(20,20,30,.85);
   color:#fff;
 
   opacity:0;
   transition:.25s ease;
   backdrop-filter: blur(6px);
+  box-shadow:0 8px 24px rgba(0,0,0,.35); /* FIX: shadow agar lebih jelas */
 }
 
 .bubble.show{
-  transform:translate(-50%, 0);
+  transform:none;
   opacity:1;
 }
 
