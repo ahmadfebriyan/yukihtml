@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, viewport-fit=cover" />
+  <title>YUKI — Speak/Chat</title>
+  <link rel="stylesheet" href="./style.css?v=4">
+  <meta name="theme-color" content="#0b0b12"/>
+</head>
+<body>
+  <main class="stage">
+    <section class="card chat" id="card" aria-label="YUKI">
+      <img src="assets/yuki.png" alt="YUKI" class="hero" />
+      <div class="glow"></div>
+
+      <!-- bubbles (notif & pesan) -->
+      <div class="bubbles" id="bubbles"></div>
+
+      <!-- tombol mode (toggle speak/chat) kiri atas -->
+      <button class="pill glass press topleft-single" id="modeBtn" title="Toggle Speak/Chat">
+        <svg id="modeIcon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 5h16v10H8l-4 4V5Z" fill="none" stroke="currentColor" stroke-width="2"></path>
+        </svg>
+        <span id="modeLabel">Chat</span>
+      </button>
+
+      <!-- tombol pengaturan kanan atas -->
+      <button class="icon glass press settings" id="settingsBtn" title="Pengaturan" aria-label="Pengaturan">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8m8.9 4c0-.34-.03-.67-.1-1l2-1.57-1.9-3.3-2.44.6a7 7 0 0 0-1.72-1l-.37-2.5h-3.8l-.37 2.5c-.62.26-1.2.6-1.72 1l-2.45-.6-1.9 3.3L3.2 11c-.09.66-.09 1.34 0 2l-2 1.57 1.9 3.3 2.45-.6c.53.4 1.11.74 1.72 1l.37 2.5h3.8l.37-2.5c.62-.26 1.2-.6 1.72-1l2.45.6 1.9-3.3 2-1.57c.07-.33.1-.66.1-1Z" fill="currentColor"></path>
+        </svg>
+      </button>
+
+      <!-- visualizer speak -->
+      <div id="viz" class="viz" aria-hidden="true">
+        <div class="ring"></div>
+        <div class="core"></div>
+      </div>
+
+      <!-- askbar (muncul hanya saat mode chat) -->
+  <div class="askbar" id="askbar">
+  <div class="ask-wrapper">
+    <input id="userInput" class="ask" placeholder="Ask Anything" />
+<button id="sendBtn" class="send" aria-label="Kirim">
+  <svg viewBox="0 0 24 24">
+    <path d="M4 4l16 8-16 8 4-8-4-8z"/>
+  </svg>
+</button>
+  </div>
+</div>
+
+    </section>
+  </main>
+
+  <!-- Pengaturan -->
+ <!-- Pengaturan (UI mirip OpenAI, pakai tabs) -->
+<dialog id="settings">
+  <form method="dialog" class="oa-panel" id="settingsForm">
+    <!-- header -->
+    <div class="oa-header">
+      <div class="oa-head-txt">
+        <h3>Settings</h3>
+        <p class="oa-sub">Atur koneksi & perilaku YUKI.</p>
+      </div>
+      <button type="button" class="oa-icon press" id="closeSettings" aria-label="Tutup">×</button>
+    </div>
+
+    <!-- body with sidebar -->
+    <div class="oa-shell">
+      <nav class="oa-tabs" aria-label="Settings sections">
+        <button type="button" class="oa-tab active" data-tab="general" id="tabGeneralBtn">
+          <span>General</span>
+        </button>
+        <button type="button" class="oa-tab" data-tab="connection" id="tabConnBtn">
+          <span>Connection</span>
+        </button>
+        <button type="button" class="oa-tab" data-tab="voice" id="tabVoiceBtn">
+          <span>Voice</span>
+        </button>
+        <button type="button" class="oa-tab" data-tab="appearance" id="tabAppearBtn">
+          <span>Appearance</span>
+        </button>
+      </nav>
+
+      <div class="oa-body">
+        <!-- TAB: GENERAL -->
+        <section class="oa-page" data-tab="general">
+          <div class="oa-section">
+            <h4>Behavior</h4>
+            <label class="oa-field">
+              <div class="oa-label">System Prompt</div>
+              <textarea id="systemPrompt" rows="4">Kamu adalah YUKI, asisten AI 2D ringan. Gunakan Bahasa Indonesia natural & ringkas. Panggil "kak Febri" bila relevan. Jujur & jelas.</textarea>
+            </label>
+          </div>
+        </section>
+
+        <!-- TAB: CONNECTION -->
+        <section class="oa-page hidden" data-tab="connection">
+          <div class="oa-section">
+            <h4>API</h4>
+            <label class="oa-field">
+              <div class="oa-label">API Base</div>
+              <input id="apiBase" placeholder="/v1" />
+              <div class="oa-hint">Gunakan <code>/v1</code> via reverse proxy (same-origin) agar aman di Android/HTTPS.</div>
+            </label>
+            <!-- Model ID hidden (auto-detect) -->
+            <input id="modelId" type="hidden" />
+            <div class="oa-row">
+              <button type="button" class="oa-btn outline press" id="autoBtn">Auto Detect</button>
+              <button type="button" class="oa-btn outline press" id="testBtn">Test</button>
+              <div class="oa-spacer"></div>
+              <button type="button" class="oa-btn subtle press" id="resetBtn">Reset</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB: VOICE (placeholder siap dikembangkan) -->
+        <!-- TAB: VOICE -->
+<section class="oa-page hidden" data-tab="voice">
+  <div class="oa-section">
+    <h4>System Voice</h4>
+
+    <label class="oa-field">
+      <div class="oa-label">Pilih Voice</div>
+      <select id="voiceSelect">
+        <option value="">(Loading voices…)</option>
+      </select>
+      <div class="oa-row">
+        <button type="button" class="oa-btn outline" id="voiceReload">Reload Voices</button>
+        <button type="button" class="oa-btn outline" id="voiceStop">Stop</button>
+        <div class="oa-spacer"></div>
+        <span class="oa-hint" id="voiceInfo"></span>
+      </div>
+    </label>
+
+    <label class="oa-field">
+      <div class="oa-label">Rate (kecepatan)</div>
+      <input type="range" id="voiceRate" min="0.5" max="2" step="0.1" value="1">
+      <span id="rateVal">1.0</span>
+    </label>
+
+    <label class="oa-field">
+      <div class="oa-label">Pitch (tinggi suara)</div>
+      <input type="range" id="voicePitch" min="0.5" max="2" step="0.1" value="1">
+      <span id="pitchVal">1.0</span>
+    </label>
+
+    <label class="oa-field">
+      <div class="oa-label">Teks Preview</div>
+      <textarea id="voiceSample" rows="2">Halo, aku YUKI. Ini contoh suaraku. Bagaimana kedengarannya?</textarea>
+    </label>
+
+    <div class="oa-row">
+      <button type="button" class="oa-btn primary" id="voicePreview">Preview</button>
+    </div>
+  </div>
+</section>
+
+        <!-- TAB: APPEARANCE (placeholder siap dikembangkan) -->
+        <section class="oa-page hidden" data-tab="appearance">
+          <div class="oa-section">
+            <h4>Appearance</h4>
+            <div class="oa-hint">Tema/glow background akan ditambahkan di update berikut. (Terkait <code>background.js</code>.)</div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- footer -->
+    <div class="oa-footer">
+      <div class="oa-footer-right">
+        <button type="submit" class="oa-btn primary press" id="saveBtn">Simpan</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+  <!-- ENTRY POINT -->
+  <script type="module" src="./main.js?v=4"></script>
+</body>
+</html>

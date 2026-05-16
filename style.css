@@ -1,0 +1,264 @@
+/* ====== Base ====== */
+*{box-sizing:border-box}
+html,body{height:100%}
+:root{
+  --bg:#0b0b12; --fg:#eef2ff; --muted:#9aa2c9;
+  --accent:#8b5dff; --accent2:#3ee0ff; --ring:#8b5dff55;
+}
+body{
+  margin:0;
+  background:radial-gradient(1300px 900px at 50% -10%, #171a3a 0%, #0b0b12 60%);
+  color:var(--fg);
+  font:16px/1.55 Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  -webkit-user-select:none; user-select:none;
+  overscroll-behavior:none;
+}
+
+/* ====== Stage & Card (9:16) ====== */
+.stage{height:100vh; display:grid; place-items:center; padding:0}
+
+.card{
+  position:relative;
+  aspect-ratio:9/16;
+  height:min(96vh,1000px);
+  width:auto;
+  border-radius:28px;
+  overflow:hidden;
+  background:linear-gradient(180deg,#141734 10%, #0b0f25 90%);
+  border:1px solid #1b1f3a;
+  box-shadow:0 60px 120px #000a, inset 0 0 0 1px #121531;
+}
+.hero{
+  position:absolute; left:50%; bottom:2%;
+  transform:translateX(-50%);
+  height:92%;
+  filter:drop-shadow(0 22px 44px #000a);
+  pointer-events:none;
+}
+.glow{
+  position:absolute;
+  inset:0;
+  border-radius:28px;
+  box-shadow:0 0 160px 30px var(--ring) inset;
+  opacity:.45;
+
+  pointer-events:none; /* ← FIX: biar klik tembus ke tombol */
+}
+
+/* ====== Mobile full-screen ====== */
+@media (max-width:768px){
+  .card{aspect-ratio:auto; width:100vw; height:100dvh; border-radius:0}
+}
+
+/* ====== Top Buttons ====== */
+.topleft-single{position:absolute; left:12px; top:12px; z-index:5}
+.settings{position:absolute; right:12px; top:12px; z-index:5}
+
+.pill{
+  min-width:86px; height:40px; padding:0 12px;
+  border-radius:16px; display:inline-flex; align-items:center; gap:.45rem;
+  font-weight:700; color:#e9ecff; border:1px solid #2a2e58; cursor:pointer;
+  background:rgba(255,255,255,.08); box-shadow:0 6px 18px #0006; backdrop-filter: blur(8px)
+}
+.icon{
+  width:38px; height:38px; border-radius:12px; display:grid; place-items:center;
+  border:1px solid #2a2e58; background:rgba(255,255,255,.08); color:#e9ecff; cursor:pointer
+}
+.pill svg,.icon svg{width:20px; height:20px}
+.press{transition:transform .06s ease,filter .06s ease}
+.press:active{transform:scale(.98); filter:brightness(.96)}
+
+/* ====== Askbar (chat only) ====== */
+.askbar{
+  position:absolute; left:50%; bottom:14px; transform:translateX(-50%);
+  width:calc(100% - 24px);
+  z-index:4;
+}
+
+.ask-wrapper{
+  position:relative;
+  width:100%;
+}
+
+.ask{
+  width:100%;
+  height:52px;
+  background:rgba(255,255,255,.06);
+  color:var(--fg);
+  border:1px solid #2a2e58;
+  border-radius:999px;
+  padding:0 56px 0 18px; /* kanan dikasih space buat tombol */
+  font-size:1rem;
+  backdrop-filter:blur(8px);
+}
+
+.send{
+  position:absolute;
+  right:6px; top:50%;
+  transform:translateY(-50%);
+  width:40px; height:40px;
+  border-radius:999px;
+  border:0; cursor:pointer;
+  display:flex; justify-content:center; align-items:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 4px 12px #0007;
+}
+.send svg{
+  width:20px; height:20px;
+  transform:rotate(-90deg); /* panah ke atas */
+  fill:#fff;
+}
+
+/* Mode visibility */
+.card.chat  #askbar{max-height:200px; opacity:1}
+.card.speak #askbar{max-height:0; opacity:0; overflow:hidden; pointer-events:none}
+
+.bubbles{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.bubble{
+  position:absolute;
+  left:50%;
+  transform:translate(-50%, 20px);
+  bottom:30px;
+
+  padding:10px 16px;
+  border-radius:14px;
+  font-size:14px;
+
+  background:rgba(20,20,30,.75);
+  color:#fff;
+
+  opacity:0;
+  transition:.25s ease;
+  backdrop-filter: blur(6px);
+}
+
+.bubble.show{
+  transform:translate(-50%, 0);
+  opacity:1;
+}
+
+.bubble.user { background:#2563eb; }
+.bubble.error { background:#dc2626; }
+.bubble.success { background:#16a34a; }
+/* ====== Visualizer (Speak) ====== */
+.viz{
+  position:absolute; left:50%; bottom:86px; transform:translateX(-50%);
+  width:120px; height:120px; z-index:4; display:none; place-items:center
+}
+.card.speak .viz{display:grid}
+.viz .ring{
+  position:absolute; inset:0; border-radius:999px; border:2px solid #3ee0ff77; filter:blur(.5px);
+  animation:ring-pulse 1.8s ease-in-out infinite
+}
+.viz .core{
+  width:60px; height:60px; border-radius:999px;
+  background:radial-gradient(circle at 50% 50%, #3ee0ff, #8b5dff);
+  transform:scale(1); transition: transform .08s linear
+}
+@keyframes ring-pulse{0%{transform:scale(.9);opacity:.6}50%{transform:scale(1.05);opacity:.85}100%{transform:scale(.9);opacity:.6}}
+
+/* ====== Settings dialog — OpenAI-like with tabs ====== */
+dialog{padding:0; border:none; background:transparent; width:min(880px,96vw)}
+.oa-panel{
+  display:flex; flex-direction:column; gap:0;
+  background:#0e0f17; color:var(--fg);
+  border:1px solid #242842; border-radius:16px;
+  box-shadow:0 30px 120px rgba(0,0,0,.45); overflow:hidden
+}
+/* Header */
+.oa-header{
+  position:relative; display:flex; align-items:center; gap:12px;
+  padding:14px 18px; background:linear-gradient(180deg,#101328,#0e0f17);
+  border-bottom:1px solid #1e2240
+}
+.oa-head-txt{display:flex; flex-direction:column}
+.oa-header h3{margin:0; font-size:18px; font-weight:800; letter-spacing:.2px}
+.oa-sub{margin:4px 0 0; color:#9aa2c9; font-size:12px}
+.oa-icon{
+  position:absolute; right:12px; top:10px;
+  width:36px; height:36px; border-radius:10px; display:grid; place-items:center;
+  color:#e9ecff; border:1px solid #2a2e58; background:rgba(255,255,255,.06); cursor:pointer
+}
+/* Shell + Sidebar */
+.oa-shell{display:grid; grid-template-columns:220px 1fr; gap:0; min-height:280px}
+@media (max-width:720px){ .oa-shell{grid-template-columns:1fr} }
+
+.oa-tabs{
+  display:flex; flex-direction:column; gap:6px;
+  padding:12px; border-right:1px solid #1a1d37;
+  background:linear-gradient(180deg,#0f1122,#0d0f19)
+}
+.oa-tab{
+  text-align:left; padding:10px 12px; border-radius:10px;
+  border:1px solid transparent; background:transparent; color:#cbd2ff;
+  font-weight:600; cursor:pointer;
+  transition:background .15s ease,border .15s ease,color .15s ease
+}
+.oa-tab:hover{ background:#14173a; border-color:#222859; color:#e7eaff }
+.oa-tab.active{ background:linear-gradient(180deg,#171b3d,#14183a); border-color:#2b3268; color:#fff }
+
+/* Body & Pages */
+.oa-body{ padding:12px 18px; max-height:min(68vh,800px); overflow:auto }
+.oa-page.hidden{ display:none !important }
+.oa-section{ padding:14px 0 18px; border-bottom:1px solid #1a1d37 }
+.oa-section:last-child{ border-bottom:none; padding-bottom:8px }
+.oa-section h4{ margin:0 0 10px; font-size:12px; color:#a7add6; text-transform:uppercase; letter-spacing:.12em }
+
+/* Fields */
+.oa-field{ display:flex; flex-direction:column; gap:8px; margin-bottom:12px }
+.oa-label{ font-weight:700; font-size:14px; color:#dfe3ff }
+.oa-hint{ font-size:12px; color:#9aa2c9 }
+.oa-hint code{ background:#13162b; padding:1px 6px; border-radius:6px; border:1px solid #23274a }
+
+.oa-field input, .oa-field textarea{
+  width:100%; background:#10122a; color:var(--fg);
+  border:1px solid #23274a; border-radius:12px; padding:12px 12px;
+  font-size:14px; outline:none
+}
+.oa-field input:focus, .oa-field textarea:focus{
+  border-color:#3b48ff; box-shadow:0 0 0 3px #3b48ff22
+}
+.oa-field select, 
+.oa-field input[type=range] {
+  width:100%; 
+  margin-top:6px;
+  background:#10122a; 
+  color:var(--fg);
+  border:1px solid #23274a; 
+  border-radius:8px;
+  padding:8px;
+}
+.oa-field input[type=range] {
+  padding:0; height:6px;
+}
+
+/* Footer & Buttons */
+.oa-footer{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 18px; border-top:1px solid #1e2240;
+  background:linear-gradient(180deg,#0e0f17,#0c0d15)
+}
+.oa-footer-right{ display:flex; gap:8px; margin-left:auto }
+
+.oa-btn{
+  height:38px; padding:0 16px; border-radius:12px; border:1px solid #2a2e58;
+  background:rgba(255,255,255,.05); color:#e9ecff; font-weight:800; cursor:pointer; letter-spacing:.2px
+}
+.oa-btn.primary{
+  border-color:transparent; color:#00121a;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  box-shadow:0 6px 18px rgba(0,0,0,.35)
+}
+.oa-btn.outline{ background:transparent; border-color:#39418a }
+.oa-btn.subtle{ background:rgba(255,255,255,.04); border-color:#2a2e58 }
+.oa-btn.press,.oa-icon.press{ transition:transform .06s ease, filter .06s ease }
+.oa-btn.press:active,.oa-icon.press:active{ transform:scale(.98); filter:brightness(.96) }
+
+/* Backdrop */
+::backdrop{ background:rgba(0,0,0,.45) }
